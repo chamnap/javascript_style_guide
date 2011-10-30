@@ -16,6 +16,11 @@
     * [Multiline string literals](#multiline)
     * [Array and Object literals](#array)
     * [Modifying prototypes of builtin objects](#modifying)
+* [JavaScript Style Rules](#style)
+    * [Naming](#naming)
+    * [Code formatting](#formatting)
+    * [String](#string)
+    * [JavaScript tidbits](#tidbits)
 
 <a name="language"/>
 # JavaScript Language Rules
@@ -235,7 +240,7 @@
     a = new Array;
     a[3] = 3;
     printArray(a);  // This is wrong again.
-    ```JavaScript
+    ```
 
 * Always use normal for loops when using arrays.
 
@@ -334,3 +339,477 @@
 ## Modifying prototypes of builtin objects
 * Modifying builtins like Object.prototype and Array.prototype are strictly forbidden.
 * Modifying other builtins like Function.prototype is less dangerous but still leads to hard to debug issues in production and should be avoided.
+
+<a name="style"/>
+# JavaScript Style Rules
+
+<a name="naming"/>
+## Naming
+* In general, use:
+  * functionNamesLikeThis,
+  * variableNamesLikeThis,
+  * ClassNamesLikeThis,
+  * EnumNamesLikeThis,
+  * methodNamesLikeThis,
+  * SYMBOLIC_CONSTANTS_LIKE_THIS.
+* Properties and methods
+  * Private members should be named with a trailing or prefixed underscore.
+  * Like public members, protected members should be named without underscore.
+
+    ```JavaScript
+    // File 1.
+
+    /** @constructor */
+      AA_PublicClass = function() {
+    };
+
+    /** @private */
+    AA_PublicClass.staticPrivateProp_ = 1;
+
+    /** @private */
+    AA_PublicClass.prototype.privateProp_ = 2;
+
+    /** @protected */
+    AA_PublicClass.staticProtectedProp = 31;
+
+    /** @protected */
+    AA_PublicClass.prototype.protectedProp = 4;
+
+    // File 2.
+
+    /**
+     * @return {number} The number of ducks we've arranged in a row.
+     */
+    AA_PublicClass.prototype.method = function() {
+      // Legal accesses of these two properties.
+      return this.privateProp_ + AA_PublicClass.staticPrivateProp_;
+    };
+
+    // File 3.
+
+    /**
+     * @constructor
+     * @extends {AA_PublicClass}
+     */
+    AA_SubClass = function() {
+      // Legal access of a protected static property.
+      AA_PublicClass.staticProtectedProp = this.method();
+    };
+    goog.inherits(AA_SubClass, AA_PublicClass);
+
+    /**
+     * @return {number} The number of ducks we've arranged in a row.
+     */
+    AA_SubClass.prototype.method = function() {
+      // Legal access of a protected instance property.
+      return this.protectedProp;
+    };
+    ```
+
+* Namespacing
+  * Use namespaces for global code to prevent collisions during code integration from two projects.
+  * Always prefix with a unique namespace name.
+
+    ```JavaScript
+    var sloth = {};
+
+    sloth.sleep = function() {
+      ...
+    };
+    ```
+
+  * Alias long type names to improve readability
+    Use local aliases, the last part of the type, for fully-qualified types if doing so improves readability.
+
+    ```JavaScript
+    /**
+     * @constructor
+     */
+    some.long.namespace.MyClass = function() {
+    };
+
+    /**
+     * @param {some.long.namespace.MyClass} a
+     */
+    some.long.namespace.MyClass.staticHelper = function(a) {
+      ...
+    };
+    ```
+
+    Never create aliases in the global scope. Use them only in function blocks.
+
+    ```JavaScript
+    myapp.main = function() {
+      var MyClass = some.long.namespace.MyClass;
+      var staticHelper = some.long.namespace.MyClass.staticHelper;
+      staticHelper(new MyClass());
+    };
+    ```
+
+    Do not alias namespaces.
+
+    ```JavaScript
+    myapp.main = function() {
+      var namespace = some.long.namespace;
+      namespace.MyClass.staticHelper(new namespace.MyClass());
+    };
+    ```
+
+* Filenames should be all lowercase. Filenames should end in .js, and should contain no punctuation except for - or _ (prefer - to _).
+
+<a name="formatting">
+## Code formatting
+* Always start your curly braces on the same line.
+
+    ```JavaScript
+    if (something) {
+      // ...
+    } else {
+      // ...
+    }
+    ```
+
+* Single-line array and object initializers are allowed when they fit on a line:
+
+    ```JavaScript
+    var arr = [1, 2, 3];  // No space around [].
+    var obj = {a: 1, b: 2, c: 3};  // No space around {}.
+    ```
+
+* Multiline array initializers and object initializers are indented 2 spaces.
+
+    ```JavaScript
+    // Object initializer.
+    var inset = {
+      top: 10,
+      right: 20,
+      bottom: 15,
+      left: 12
+    };
+
+    // Array initializer.
+    this.rows_ = [
+      '"Slartibartfast" <fjordmaster@magrathea.com>',
+      '"Zaphod Beeblebrox" <theprez@universe.gov>',
+      '"Ford Prefect" <ford@theguide.com>',
+      '"Arthur Dent" <has.no.tea@gmail.com>',
+      '"Marvin the Paranoid Android" <marv@googlemail.com>',
+      'the.mice@magrathea.com'
+    ];
+
+    // Used in a method call.
+    goog.dom.createDom(goog.dom.TagName.DIV, {
+      id: 'foo',
+      className: 'some-css-class',
+      style: 'display:none'
+    }, 'Hello, world!');
+    ```
+
+* Always prefer non-aligned initialization. For example:
+
+    ```JavaScript
+    CORRECT_Object.prototype = {
+      a: 0,
+      b: 1,
+      lengthyName: 2
+    };
+    ```
+
+    Not like this:
+
+    ```JavaScript
+    WRONG_Object.prototype = {
+      a          : 0,
+      b          : 1,
+      lengthyName: 2
+    };
+    ```
+
+* Indentation
+
+    ```JavaScript
+    // Four-space, wrap at 80.  Works with very long function names, survives
+    // renaming without reindenting, low on space.
+    goog.foo.bar.doThingThatIsVeryDifficultToExplain = function(
+        veryDescriptiveArgumentNumberOne, veryDescriptiveArgumentTwo,
+        tableModelEventHandlerProxy, artichokeDescriptorAdapterIterator) {
+      // ...
+    };
+
+    // Four-space, one argument per line.  Works with long function names,
+    // survives renaming, and emphasizes each argument.
+    goog.foo.bar.doThingThatIsVeryDifficultToExplain = function(
+        veryDescriptiveArgumentNumberOne,
+        veryDescriptiveArgumentTwo,
+        tableModelEventHandlerProxy,
+        artichokeDescriptorAdapterIterator) {
+      // ...
+    };
+
+    // Parenthesis-aligned indentation, wrap at 80.  Visually groups arguments,
+    // low on space.
+    function foo(veryDescriptiveArgumentNumberOne, veryDescriptiveArgumentTwo,
+                 tableModelEventHandlerProxy, artichokeDescriptorAdapterIterator) {
+      // ...
+    }
+
+    // Parenthesis-aligned, one argument per line.  Visually groups and
+    // emphasizes each individual argument.
+    function bar(veryDescriptiveArgumentNumberOne,
+                 veryDescriptiveArgumentTwo,
+                 tableModelEventHandlerProxy,
+                 artichokeDescriptorAdapterIterator) {
+      // ...
+    }
+    ```
+
+    ```JavaScript
+    prefix.something.reallyLongFunctionName('whatever', function(a1, a2) {
+      if (a1.equals(a2)) {
+        someOtherLongFunctionName(a1);
+      } else {
+        andNowForSomethingCompletelyDifferent(a2.parrot);
+      }
+    });
+
+    var names = prefix.something.myExcellentMapFunction(
+        verboselyNamedCollectionOfItems,
+        function(item) {
+          return item.name;
+        });
+    ```
+
+    ```JavaScript
+    someWonderfulHtml = '' +
+                        getEvenMoreHtml(someReallyInterestingValues, moreValues,
+                                        evenMoreParams, 'a duck', true, 72,
+                                        slightlyMoreMonkeys(0xfff)) +
+                        '';
+
+    thisIsAVeryLongVariableName =
+        hereIsAnEvenLongerOtherFunctionNameThatWillNotFitOnPrevLine();
+
+    thisIsAVeryLongVariableName = 'expressionPartOne' + someMethodThatIsLong() +
+        thisIsAnEvenLongerOtherFunctionNameThatCannotBeIndentedMore();
+
+    someValue = this.foo(
+        shortArg,
+        'Some really long string arg - this is a pretty common case, actually.',
+        shorty2,
+        this.bar());
+
+    if (searchableCollection(allYourStuff).contains(theStuffYouWant) &&
+        !ambientNotification.isActive() && (client.isAmbientSupported() ||
+                                            client.alwaysTryAmbientAnyways())) {
+      ambientNotification.activate();
+    }
+    ```
+
+* Use newlines to group logically related pieces of code
+
+    ```JavaScript
+    doSomethingTo(x);
+    doSomethingElseTo(x);
+    andThen(x);
+
+    nowDoSomethingWith(y);
+
+    andNowWith(z);
+    ```
+
+* Binary and Ternary Operators
+
+    ```JavaScript
+    var x = a ? b : c;  // All on one line if it will fit.
+
+    // Indentation +4 is OK.
+    var y = a ?
+        longButSimpleOperandB : longButSimpleOperandC;
+
+    // Indenting to the line position of the first operand is also OK.
+    var z = a ?
+            moreComplicatedB :
+            moreComplicatedC;
+    ```
+
+<a name="string">
+## String
+* Prefer ' over "
+  For consistency single-quotes (') are preferred to double-quotes ("). This is helpful when creating strings that include HTML:
+
+    ```JavaScript
+    var msg = 'This is some HTML';
+    ```
+
+<a name="tidbits">
+## JavaScript tidbits
+* True and False Boolean Expressions
+  The following are all false in boolean expressions:
+
+  * null
+  * undefined
+  * '' the empty string
+  * 0 the number
+
+  But be careful, because these are all true:
+
+  * '0' the string
+  * [] the empty array
+  * {} the empty object
+
+  Instead of this:
+
+    ```JavaScript
+    while (x != null) {
+    ```
+
+  you can write this:
+
+    ```JavaScript
+    while (x) {
+    ```
+
+  Instead of this:
+
+    ```JavaScript
+    if (y != null && y != '') {
+    ```
+
+  you can write this:
+
+    ```JavaScript
+    if (y) {
+    ```
+
+* There are some unintuitive things:
+
+    ```JavaScript
+    Boolean('0') == true
+    '0' != true
+
+    0 != null
+    0 == []
+    0 == false
+
+    Boolean(null) == false
+    null != true
+    null != false
+
+    Boolean(undefined) == false
+    undefined != true
+    undefined != false
+
+    Boolean([]) == true
+    [] != true
+    [] == false
+
+    Boolean({}) == true
+    {} != true
+    {} != false
+    ```
+
+* Ternary Operator
+
+  Instead of this:
+
+    ```JavaScript
+    if (val != 0) {
+      return foo();
+    } else {
+      return bar();
+    }
+    ```
+
+  you can write this:
+
+    ```JavaScript
+    return val ? foo() : bar();
+    ```
+
+  The ternary conditional is also useful when generating HTML:
+
+    ```JavaScript
+    var html = '<input type="checkbox"' +
+        (isChecked ? ' checked' : '') +
+        (isEnabled ? '' : ' disabled') +
+        ' name="foo">';
+    ```
+
+* && and ||
+
+  Instead of this:
+
+    ```JavaScript
+    /** @param {*=} opt_win */
+    function foo(opt_win) {
+      var win;
+      if (opt_win) {
+        win = opt_win;
+      } else {
+        win = window;
+      }
+      // ...
+    }
+    ```
+
+  you can write this:
+
+    ```JavaScript
+    /** @param {*=} opt_win */
+    function foo(opt_win) {
+      var win = opt_win || window;
+      // ...
+    }
+    ```
+
+  "&&" is also useful for shortening code.
+  Instead of this:
+
+    ```JavaScript
+    if (node) {
+      if (node.kids) {
+        if (node.kids[index]) {
+          foo(node.kids[index]);
+        }
+      }
+    }
+    ```
+
+  You could do this:
+
+    ```JavaScript
+    if (node && node.kids && node.kids[index]) {
+      foo(node.kids[index]);
+    }
+    ```
+
+* Use join() to Build Strings
+  It's common to see this:
+
+    ```JavaScript
+    function listHtml(items) {
+      var html = '<div class="foo">';
+      for (var i = 0; i < items.length; ++i) {
+        if (i > 0) {
+          html += ', ';
+        }
+        html += itemHtml(items[i]);
+      }
+      html += '</div>';
+      return html;
+    }
+    ```
+
+  but this is slow in IE, you could better do this:
+
+    ```JavaScript
+    function listHtml(items) {
+      var html = [];
+      for (var i = 0; i < items.length; ++i) {
+        html[i] = itemHtml(items[i]);
+      }
+      return '<div class="foo">' + html.join(', ') + '</div>';
+    }
+    ```
+
+  Assigning values to an array is faster than using push().
