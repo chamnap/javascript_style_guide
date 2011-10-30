@@ -351,7 +351,9 @@
   * ClassNamesLikeThis,
   * EnumNamesLikeThis,
   * methodNamesLikeThis,
-  * SYMBOLIC_CONSTANTS_LIKE_THIS.
+  * SYMBOLIC_CONSTANTS_LIKE_THIS,
+  * onEventHandlerFunction
+
 * Properties and methods
   * Private members should be named with a trailing or prefixed underscore.
   * Like public members, protected members should be named without underscore.
@@ -459,6 +461,7 @@
 
 <a name="formatting">
 ## Code formatting
+* Always use braces on if/else even though it has only statement.
 * Always start your curly braces on the same line.
 
     ```JavaScript
@@ -523,6 +526,29 @@
       b          : 1,
       lengthyName: 2
     };
+    ```
+
+* Whitespace
+  * No tabs. Indent blocks with two spaces.
+  * Spaces after commas and semicolons.
+  * Separate binary operators with spaces.
+  * Space after keywords (if, for, etc).
+  * No trailing space on each line.
+  * Spaces are not necessary inside brackets.
+
+    ```JavaScript
+    myFunction(a, b)
+    ```
+  * Use newlines to group logically related pieces of code or to seperate between block definitions.
+
+    ```JavaScript
+    doSomethingTo(x);
+    doSomethingElseTo(x);
+    andThen(x);
+
+    nowDoSomethingWith(y);
+
+    andNowWith(z);
     ```
 
 * Indentation
@@ -598,23 +624,14 @@
         shorty2,
         this.bar());
 
+    var IOService = Components.classes["@mozilla.org/network/io-service;1"]
+                              .getService(Components.interfaces.nsIIOService);
+
     if (searchableCollection(allYourStuff).contains(theStuffYouWant) &&
         !ambientNotification.isActive() && (client.isAmbientSupported() ||
                                             client.alwaysTryAmbientAnyways())) {
       ambientNotification.activate();
     }
-    ```
-
-* Use newlines to group logically related pieces of code
-
-    ```JavaScript
-    doSomethingTo(x);
-    doSomethingElseTo(x);
-    andThen(x);
-
-    nowDoSomethingWith(y);
-
-    andNowWith(z);
     ```
 
 * Binary and Ternary Operators
@@ -736,7 +753,7 @@
     ```
 
 * && and ||
-
+  * ||, the default operator
   Instead of this:
 
     ```JavaScript
@@ -762,7 +779,7 @@
     }
     ```
 
-  "&&" is also useful for shortening code.
+  * "&&" is also useful for shortening code.
   Instead of this:
 
     ```JavaScript
