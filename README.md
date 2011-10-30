@@ -21,6 +21,9 @@
     * [Code formatting](#formatting)
     * [String](#string)
     * [JavaScript tidbits](#tidbits)
+* [JavaScript Common Patterns](#patterns)
+    * [Module Pattern](#module)
+    * [Revealing Module Pattern](#revealing)
 
 <a name="language"/>
 # JavaScript Language Rules
@@ -150,6 +153,23 @@
       var x = 3;
       return x;
     }
+    ```
+
+    Instead of this:
+
+    ```JavaScript
+    with (ooo.eee.oo.ah_ah.ting.tang.walla.walla) {
+      bing = true;
+      bang = true;
+    }
+    ```
+
+    you could do this:
+
+    ```JavaScript
+    var o = ooo.eee.oo.ah_ah.ting.tang.walla.walla;
+    o.bing = true;
+    o.bang = true;
     ```
 
 <a name="this">
@@ -534,7 +554,7 @@
   * Separate binary operators with spaces.
   * Space after keywords (if, for, etc).
   * No trailing space on each line.
-  * Spaces are not necessary inside brackets.
+  * Spaces are NOT necessary inside brackets.
 
     ```JavaScript
     myFunction(a, b)
@@ -830,3 +850,72 @@
     ```
 
   Assigning values to an array is faster than using push().
+
+<a name="patterns">
+# JavaScript Common Patterns
+
+<a name="module">
+## The Module Pattern
+* This is the most common pattern in JavaScript. It was originally formally defined by Douglas Crockford (JavaScript: The Good Parts).
+* You probably have heard about "Global variables are evil", and this pattern allows us to define public/private members which means that you avoid polluting or clobbering the global namespaces. You will have a level of shielding from external entities accessing your 'hidden' information.
+
+    ```JavaScript
+    var someModule = (function () {
+
+      //private attributes
+      var privateVar = 5;
+
+      //private methods
+      var privateMethod = function() {
+        return 'Private Test';
+      };
+
+      return {
+
+        //public attributes
+        publicVar: 10,
+
+        //public methods
+        publicMethod: function () {
+          return ' Followed By Public Test ';
+        },
+
+        //let's access the private members
+        getData: function () {
+          return privateMethod() + this.publicMethod() + privateVar;
+        }
+      }
+    })(); //the parent here cause the anonymous function to execute and return
+
+    someModule.getData();
+    ```
+
+<a name="revealing">
+## The Revealing Module Pattern
+* Here is a slightly improved version - [Christian Heilmann’s Revealing Module pattern](http://christianheilmann.com/2007/08/22/again-with-the-module-pattern-reveal-something-to-the-world/)
+* The benefits of this pattern is that it makes very clear at the end which of your functions and variables may be accessed publicly. Moreover, you are able to reveal private functions with different name.
+
+    ```JavaScript
+    var myRevealingModule = (function () {
+      var name = 'John Smith';
+      var age = 40;
+
+      function updatePerson() {
+        name = 'John Smith Updated';
+      }
+      function setPerson() {
+         name = 'John Smith Set';
+      }
+      function getPerson() {
+         return name;
+      }
+
+      return {
+          set: setPerson,
+          get: getPerson
+      };
+    })();
+
+    // Sample usage:
+    myRevealingModule.get();
+    ```
