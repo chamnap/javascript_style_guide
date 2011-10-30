@@ -652,7 +652,7 @@
 <a name="string">
 ## String
 * Prefer ' over "
-  For consistency single-quotes (') are preferred to double-quotes ("). This is helpful when creating strings that include HTML:
+    For consistency single-quotes (') are preferred to double-quotes ("). This is helpful when creating strings that include HTML:
 
     ```JavaScript
     var msg = 'This is some HTML';
@@ -661,38 +661,38 @@
 <a name="tidbits">
 ## JavaScript tidbits
 * True and False Boolean Expressions
-  The following are all false in boolean expressions:
+    The following are all false in boolean expressions:
 
-  * null
-  * undefined
-  * '' the empty string
-  * 0 the number
+      * null
+      * undefined
+      * '' the empty string
+      * 0 the number
 
-  But be careful, because these are all true:
+      But be careful, because these are all true:
 
-  * '0' the string
-  * [] the empty array
-  * {} the empty object
+      * '0' the string
+      * [] the empty array
+      * {} the empty object
 
-  Instead of this:
+    Instead of this:
 
     ```JavaScript
     while (x != null) {
     ```
 
-  you can write this:
+    you can write this:
 
     ```JavaScript
     while (x) {
     ```
 
-  Instead of this:
+    Instead of this:
 
     ```JavaScript
     if (y != null && y != '') {
     ```
 
-  you can write this:
+    you can write this:
 
     ```JavaScript
     if (y) {
@@ -727,7 +727,7 @@
 
 * Ternary Operator
 
-  Instead of this:
+    Instead of this:
 
     ```JavaScript
     if (val != 0) {
@@ -737,13 +737,13 @@
     }
     ```
 
-  you can write this:
+    you can write this:
 
     ```JavaScript
     return val ? foo() : bar();
     ```
 
-  The ternary conditional is also useful when generating HTML:
+    The ternary conditional is also useful when generating HTML:
 
     ```JavaScript
     var html = '<input type="checkbox"' +
@@ -753,8 +753,8 @@
     ```
 
 * && and ||
-  * ||, the default operator
-  Instead of this:
+  * ||, the default operator.
+    Instead of this:
 
     ```JavaScript
     /** @param {*=} opt_win */
@@ -769,7 +769,7 @@
     }
     ```
 
-  you can write this:
+    you can write this:
 
     ```JavaScript
     /** @param {*=} opt_win */
@@ -780,7 +780,7 @@
     ```
 
   * "&&" is also useful for shortening code.
-  Instead of this:
+    Instead of this:
 
     ```JavaScript
     if (node) {
@@ -792,7 +792,7 @@
     }
     ```
 
-  You could do this:
+    you could do this:
 
     ```JavaScript
     if (node && node.kids && node.kids[index]) {
@@ -801,7 +801,7 @@
     ```
 
 * Use join() to Build Strings
-  It's common to see this:
+    It's common to see this:
 
     ```JavaScript
     function listHtml(items) {
@@ -817,7 +817,7 @@
     }
     ```
 
-  but this is slow in IE, you could better do this:
+    but this is slow in IE, you could better do this:
 
     ```JavaScript
     function listHtml(items) {
