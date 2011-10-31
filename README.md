@@ -3,7 +3,7 @@ I see a lot of new or existing JavaScript developers are not coding in the prope
 
 Two years before I left JavaScript, I was intended to do presentation about what are the most common mistakes in the my office. However, I failed to do it because of some reasons. A few months ago I see there are a [Ruby](#https://github.com/bbatsov/ruby-style-guide) and [Rails](#https://github.com/bbatsov/rails-style-guide) Style Guide. I think I should do one on JavaScript Style Guide.
 
-There are many sources I've combined into the below documents. You could see the link for more details in each topic and in the appendix. The main ones are from Google Javascript Style Guide, JavaScript Patterns from Addy Osmani, JavaScript Object-Oriented Programming from Mozilla. Here, I took most of the good parts and write up in a bit more details to clarify.
+There are many sources I've combined into the below documents. You could see the link for more details in each topic and in the References section. The main ones are from Google Javascript Style Guide, JavaScript Patterns from Addy Osmani, JavaScript Object-Oriented Programming from Mozilla. Here, I took most of the good parts and write up in a bit more details to clarify.
 
 Anyway, welcome your feedbacks. (The work is in progress.)
 
@@ -40,7 +40,7 @@ Anyway, welcome your feedbacks. (The work is in progress.)
 * [JavaScript Common Patterns](#patterns)
     * [Module Pattern](#module)
     * [Revealing Module Pattern](#revealing)
-* [Appendix](#appendix)
+* [References](#references)
 
 <a name="language"/>
 # JavaScript Language Rules
@@ -1117,12 +1117,13 @@ JavaScript doesn't support the concept of classes in nature. We need some javasc
     myRevealingModule.get();
     ```
 
-<a name="appendix">
-* (http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
-* (http://addyosmani.com/resources/essentialjsdesignpatterns/book)
-* (http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth)
-* (https://developer.mozilla.org/en/Introduction_to_Object-Oriented_JavaScript)
-* (https://developer.mozilla.org/en/JavaScript/A_re-introduction_to_JavaScript)
-* (http://javascript.crockford.com/private.html)
-* (http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/)
-* (http://greasemonkey.github.com/style.html)
+<a name="references">
+# References
+* http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
+* http://addyosmani.com/resources/essentialjsdesignpatterns/book
+* http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth
+* https://developer.mozilla.org/en/Introduction_to_Object-Oriented_JavaScript
+* https://developer.mozilla.org/en/JavaScript/A_re-introduction_to_JavaScript
+* http://javascript.crockford.com/private.html
+* http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/
+* http://greasemonkey.github.com/style.html
