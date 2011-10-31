@@ -21,6 +21,12 @@
     * [Code formatting](#formatting)
     * [String](#string)
     * [JavaScript tidbits](#tidbits)
+* [JavaScript Object Oriented Programming](#object)
+    * [Constructor](#constructor)
+    * [Private Members](#private)
+    * [Static Members](#static)
+    * [Inheritance](#inheritance)
+    * [Mixin](#mixin)
 * [JavaScript Common Patterns](#patterns)
     * [Module Pattern](#module)
     * [Revealing Module Pattern](#revealing)
@@ -54,7 +60,7 @@
 * Always use semicolons. Always end your assignment statements with semicolons.
 
     ```JavaScript
-    MyClass.prototype.myMethod = function() {
+    MyClass.prototype.myMethod = function () {
       return 42;
     };
     
@@ -91,7 +97,7 @@
 
     ```JavaScript
     if (x) {
-      var foo = function() {}
+      var foo = function () {}
     }
     ```
 
@@ -122,7 +128,7 @@
 * The preferred style of declaring method definition is:
 
     ```JavaScript
-    Foo.prototype.bar = function() {
+    Foo.prototype.bar = function () {
       /* ... */
     };
     ```
@@ -191,7 +197,7 @@
     ```JavaScript
     foo = {
       name: "hi",
-      execute: function() {
+      execute: function () {
         eval("alert(this.name)");
       }
     }
@@ -355,7 +361,7 @@
     };
     ```
 
-<a name="modify">
+<a name="modifying">
 ## Modifying prototypes of builtin objects
 * Modifying builtins like Object.prototype and Array.prototype are strictly forbidden.
 * Modifying other builtins like Function.prototype is less dangerous but still leads to hard to debug issues in production and should be avoided.
@@ -382,7 +388,7 @@
     // File 1.
 
     /** @constructor */
-      AA_PublicClass = function() {
+      AA_PublicClass = function () {
     };
 
     /** @private */
@@ -402,7 +408,7 @@
     /**
      * @return {number} The number of ducks we've arranged in a row.
      */
-    AA_PublicClass.prototype.method = function() {
+    AA_PublicClass.prototype.method = function () {
       // Legal accesses of these two properties.
       return this.privateProp_ + AA_PublicClass.staticPrivateProp_;
     };
@@ -413,7 +419,7 @@
      * @constructor
      * @extends {AA_PublicClass}
      */
-    AA_SubClass = function() {
+    AA_SubClass = function () {
       // Legal access of a protected static property.
       AA_PublicClass.staticProtectedProp = this.method();
     };
@@ -422,7 +428,7 @@
     /**
      * @return {number} The number of ducks we've arranged in a row.
      */
-    AA_SubClass.prototype.method = function() {
+    AA_SubClass.prototype.method = function () {
       // Legal access of a protected instance property.
       return this.protectedProp;
     };
@@ -435,7 +441,7 @@
     ```JavaScript
     var sloth = {};
 
-    sloth.sleep = function() {
+    sloth.sleep = function () {
       ...
     };
     ```
@@ -447,7 +453,7 @@
     /**
      * @constructor
      */
-    some.long.namespace.MyClass = function() {
+    some.long.namespace.MyClass = function () {
     };
 
     /**
@@ -461,7 +467,7 @@
     Never create aliases in the global scope. Use them only in function blocks.
 
     ```JavaScript
-    myapp.main = function() {
+    myapp.main = function () {
       var MyClass = some.long.namespace.MyClass;
       var staticHelper = some.long.namespace.MyClass.staticHelper;
       staticHelper(new MyClass());
@@ -471,7 +477,7 @@
     Do not alias namespaces.
 
     ```JavaScript
-    myapp.main = function() {
+    myapp.main = function () {
       var namespace = some.long.namespace;
       namespace.MyClass.staticHelper(new namespace.MyClass());
     };
@@ -851,8 +857,188 @@
 
   Assigning values to an array is faster than using push().
 
+<a name="object">
+# JavaScript Object Oriented Programming
+JavaScript doesn't support the concept of classes in nature. We need some javascript patterns to emulate this behaviour. Thanks to [Douglas Crockford](http://javascript.crockford.com/private.html).
+
+<a name="constructor">
+## Constructor and Public Members
+* In JavaScript, constructors are just function, constructor function. We use this to create objects from this function. Usually, we capitalize the name of constructor function and use the 'new' operator to instantiate a new object.
+* Inside a constructor, the keyword 'this' references the new object that's being created. We define  properties inside constructor and define methods inside the constructor's prototype.
+* With this pattern, all methods are created off of the prototype, which means there is only one copy of each in memory, no matter how many instances you create.
+
+    ```JavaScript
+    function Car(model, year, miles) {
+
+      // public attributes
+      this.model = model;
+      this.year = year;
+      this.miles = miles;
+    }
+
+    /*
+     Note here that we are using Object.prototype.newMethod rather than 
+     Object.prototype so as to avoid redefining the prototype object.
+     Public methods
+    */
+    Car.prototype.toString = function () {
+      return this.model + " has done " + this.miles + " miles";
+    };
+
+    var civic = new Car("Honda Civic", 2009, 20000);
+    var mondeo = new Car("Ford Mondeo", 2010, 5000);
+
+    console.log(civic.toString());
+    ```
+
+<a name="private">
+## Private Members
+* There are two usual ways to implement private members:
+  * through naming convention: an underscore is added to name of members. This signifies they are for internal use only.
+
+    ```JavaScript
+    function Car(model, year, miles) {
+
+      // private members through convention
+      this._model = model;
+      this._year = year;
+      this._miles = miles;
+    }
+
+    Car.prototype._setAttribute(name, value) {
+        this["_" + name] = value;
+    };
+
+    Car.prototype.setModel = function(model) {
+        this._setAttribute('model', model);
+    };
+
+    Car.prototype.getModel = function () {
+      return this._model;
+    };
+    ```
+
+  * through closure: the downside is that all members are not in the constructor's prototype object. Therefore, each methods are not shared between instances.
+
+    ```JavaScript
+    function Car(model, year, miles) {
+
+      // private attributes and methods
+      var _model = model;
+      var _year = year;
+      var _miles = miles;
+      var _setModel = function(value) {
+        // do some checking
+        _model = value;
+      };
+
+      // public methods
+      this.getModel = function () {
+        return _model;
+      };
+
+      this.setModel = function(model) {
+        _setModel(model);
+      };
+    }
+    ```
+
+<a name="static">
+## Static Members
+
+    ```JavaScript
+    var Book = (function () {
+      var numOfBooks = 0; // Private static attributes. 
+      function checkIsbn(isbn) { // Private static method. ... } 
+
+      // Return the constructor. 
+      return function(newIsbn, newTitle, newAuthor) { 
+        var isbn; // Private attributes.
+        this.getIsbn = function () { // Privileged methods. 
+          return isbn;
+        };
+
+        this.setIsbn = function(newIsbn) {
+          if(!checkIsbn(newIsbn)) throw new Error('Book: Invalid ISBN.');
+          isbn = newIsbn;
+        }; 
+        numOfBooks++; // Keep track of how many Books have been created 
+        this.setIsbn(newIsbn);
+      }
+    })();
+
+    Book.convertToTitleCase = function(inputString) { // Public static method.
+      ...
+    };
+    Book.prototype = { // Public, non-privileged methods.
+      display: function () {
+        ...
+      } 
+    }; 
+    ```
+
+<a name="inheritance">
+## Inheritance
+
+    ```JavaScript
+    function Employee(name, dept) {
+      this.name = name || "";
+      this.dept = dept || "";
+    }
+
+    function Engineer(name, machine) {
+
+      // 1. calling the superclass's constructor
+      Employee.call(this, name, "engineering");
+      this.machine = machine;
+    }
+
+    // 2. setup the prototype chain
+    Engineer.prototype = new Employee();
+    ```
+<a name="mixin">
+## Mixin
+* This is another way to make our code reuse without inheritance. In practice, you create an object that contains your general-purpose methods, and then use it to augment/extend other classes. It is generally not instantiated or called directly, instead it exists to provide methods to other classes.
+* For more detail, check this [blog post](http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/)
+
+    ```JavaScript
+    var circleFns = {
+      area: function () {
+        return Math.PI * this.radius * this.radius;
+      },
+      grow: function () {
+        this.radius++;
+      },
+      shrink: function () {
+        this.radius--;
+      }
+    };
+
+    /*
+      The extend method will simply copy all methods from destination to source.
+      Here, make sure that method belongs to, not inherited methods, the destination object.
+    */
+    function extend(destination, source) {
+      for (var k in source) {
+        if (source.hasOwnProperty(k)) {
+          destination[k] = source[k];
+        }
+      }
+      return destination;
+    }
+
+    var RoundButton = function(radius, label) {
+      this.radius = radius;
+      this.label = label;
+    };
+
+    extend(RoundButton.prototype, circleFns);
+    extend(RoundButton.prototype, buttonFns);
+    ```
+
 <a name="patterns">
 # JavaScript Common Patterns
+* Thanks to the author of this [online book](#http://addyosmani.com/resources/essentialjsdesignpatterns/book/) for his excellent write-up. I've learnt quite a lot.
 
 <a name="module">
 ## The Module Pattern
@@ -866,7 +1052,7 @@
       var privateVar = 5;
 
       //private methods
-      var privateMethod = function() {
+      var privateMethod = function () {
         return 'Private Test';
       };
 
