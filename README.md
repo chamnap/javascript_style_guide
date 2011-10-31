@@ -1,3 +1,12 @@
+## JavaScript Style Guide - Abstract
+I see a lot of new or existing JavaScript developers are not coding in the proper way. I always see things which can be improved on their codebase, but I can't help them much because I moved to the most busiest Ruby team. I understand that JavaScript is the most misunderstood language, but many people is able to catch it up at the beginner level quite easily in my office.
+
+Two years before I left JavaScript, I was intended to do presentation about what are the most common mistakes in the my office. However, I failed to do it because of some reasons. A few months ago I see there are a [Ruby](#https://github.com/bbatsov/ruby-style-guide) and [Rails](#https://github.com/bbatsov/rails-style-guide) Style Guide. I think I should do one on JavaScript Style Guide.
+
+There are many sources I've combined into the below documents. You could see the link for more details in each topic and in the appendix. The main ones are from Google Javascript Style Guide, JavaScript Patterns from Addy Osmani, JavaScript Object-Oriented Programming from Mozilla. Here, I took most of the good parts and write up in a bit more details to clarify.
+
+Anyway, welcome your feedbacks. (The work is in progress.)
+
 ## Table of Contents
 
 * [JavaScript Language Rules](#language)
@@ -16,6 +25,7 @@
     * [Multiline string literals](#multiline)
     * [Array and Object literals](#array)
     * [Modifying prototypes of builtin objects](#modifying)
+    * [Closure (working in progress)](#closure)
 * [JavaScript Style Rules](#style)
     * [Naming](#naming)
     * [Code formatting](#formatting)
@@ -30,6 +40,7 @@
 * [JavaScript Common Patterns](#patterns)
     * [Module Pattern](#module)
     * [Revealing Module Pattern](#revealing)
+* [Appendix](#appendix)
 
 <a name="language"/>
 # JavaScript Language Rules
@@ -999,7 +1010,7 @@ JavaScript doesn't support the concept of classes in nature. We need some javasc
 <a name="mixin">
 ## Mixin
 * This is another way to make our code reuse without inheritance. In practice, you create an object that contains your general-purpose methods, and then use it to augment/extend other classes. It is generally not instantiated or called directly, instead it exists to provide methods to other classes.
-* For more detail, check this [blog post](http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/)
+* For more detail, check this [blog post](http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/).
 
     ```JavaScript
     var circleFns = {
@@ -1038,7 +1049,7 @@ JavaScript doesn't support the concept of classes in nature. We need some javasc
 
 <a name="patterns">
 # JavaScript Common Patterns
-* Thanks to the author of this [online book](#http://addyosmani.com/resources/essentialjsdesignpatterns/book/) for his excellent write-up. I've learnt quite a lot.
+* Thanks to Addy Osmani, the author of this [online book](#http://addyosmani.com/resources/essentialjsdesignpatterns/book/) for his excellent write-up. I've learnt quite a lot from this.
 
 <a name="module">
 ## The Module Pattern
@@ -1105,3 +1116,13 @@ JavaScript doesn't support the concept of classes in nature. We need some javasc
     // Sample usage:
     myRevealingModule.get();
     ```
+
+<a name="appendix">
+* (http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
+* (http://addyosmani.com/resources/essentialjsdesignpatterns/book)
+* (http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth)
+* (https://developer.mozilla.org/en/Introduction_to_Object-Oriented_JavaScript)
+* (https://developer.mozilla.org/en/JavaScript/A_re-introduction_to_JavaScript)
+* (http://javascript.crockford.com/private.html)
+* (http://javascriptweblog.wordpress.com/2011/05/31/a-fresh-look-at-javascript-mixins/)
+* (http://greasemonkey.github.com/style.html)
