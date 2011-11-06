@@ -1,5 +1,5 @@
 ## JavaScript Style Guide - Abstract
-I see a lot of new or existing JavaScript developers are not coding in the proper way. I always see things which can be improved on their codebase, but I can't help them much because I moved to the most busiest Ruby team. I understand that JavaScript is the most misunderstood language, but many people is able to catch it up at the beginner level quite easily in my office.
+I see a lot of new or existing JavaScript developers are not coding in the proper way in my office. I always see things which can be improved on their codebase, but I can't help them much because I moved to the most busiest Ruby team. I understand that JavaScript is the most misunderstood language, but many people is able to catch it up fairly well.
 
 Two years before I left JavaScript, I was intended to do presentation about what are the most common mistakes in the my office. However, I failed to do it because of some reasons. A few months ago I see there are a [Ruby](#https://github.com/bbatsov/ruby-style-guide) and [Rails](#https://github.com/bbatsov/rails-style-guide) Style Guide. I think I should do one on JavaScript Style Guide.
 
@@ -25,6 +25,7 @@ Anyway, welcome your feedbacks. (The work is in progress.)
     * [Multiline string literals](#multiline)
     * [Array and Object literals](#array)
     * [Modifying prototypes of builtin objects](#modifying)
+    * [Data Access](#data)
     * [Closure (working in progress)](#closure)
 * [JavaScript Style Rules](#style)
     * [Naming](#naming)
@@ -377,10 +378,116 @@ Anyway, welcome your feedbacks. (The work is in progress.)
 * Modifying builtins like Object.prototype and Array.prototype are strictly forbidden.
 * Modifying other builtins like Function.prototype is less dangerous but still leads to hard to debug issues in production and should be avoided.
 
-<a name="style"/>
+<a name="data">
+## Data Access
+* Based on the book "High Performance JavaScript":
+    * Literal value and local variable access tend to be faster than array item and object member access.
+    * Always store out-of-scope values in local variables if used more than once because older browsers take much larger amount of time taken to access values.
+
+    ```JavaScript
+    function initUI() {
+      var bd = document.body,
+          links = document.getElementsByTagName("a"),
+          i= 0,
+          len = links.length;
+
+      while (i < len) {
+        update(links[i++]);
+      }
+
+      document.getElementById("go-btn").onclick = function () {
+        start();
+      };
+
+      bd.className = "active";
+    }
+    ```
+
+    It could be written in this way by declaring local variables:
+
+    ```JavaScript
+    function initUI() {
+      var doc = document,
+          bd = doc.body,
+          links = doc.getElementsByTagName("a"),
+          i = 0,
+          len = links.length;
+
+      while(i < len) {
+        update(links[i++]);
+      }
+
+      doc.getElementById("go-btn").onclick = function () {
+        start();
+      };
+
+      bd.className = "active";
+    }
+    ```
+
+    * Older browsers, IE and FF 3.5, incur a performance penalty with each additional step into the prototype chain. 
+    * The nested members such as "window.location.href" causes the javascript engine to go through the object member resolution process two times (the number of dots).
+
+    ```JavaScript
+    function toggle(element) {
+      if (YAHOO.util.Dom.hasClass(element, "selected")) {
+        YAHOO.util.Dom.removeClass(element, "selected");
+        return false;
+      } else {
+        YAHOO.util.Dom.addClass(element, "selected");
+        return true;
+      }
+    }
+    ```
+
+    It would be written in this way:
+
+    ```JavaScript
+    function toggle(element) {
+      var Dom = YAHOO.util.Dom;
+      if (Dom.hasClass(element, "selected")) {
+        Dom.removeClass(element, "selected");
+        return false;
+      } else {
+        Dom.addClass(element, "selected");
+        return true;
+      }
+    }
+    ```
+
+<a name="closure">
+## Closure
+
+* A closure function requires more memory overhead in a script than a nonclosure function because it keeps a pointer to its enclosing scope. As a result, it might be a problem, circular reference and thus create memory leak, on IE 6.
+* Although it might not create memory leak on other browsers, it incurrs a performance penalty with each access of out-of-scope identifiers.
+
+    ```JavaScript
+    function foo(element, a, b) {
+
+      /* This event handler is a closure, can access a and b.
+         It keeps a reference to element, a, and b although it never uses element.
+         element also keeps a reference to the closure as well.
+      */
+      element.onclick = function() { /* uses a and b */ };
+    }
+    ```
+
+    It could be written in this way:
+
+    ```JavaScript
+    function foo(element, a, b) {
+      element.onclick = bar(a, b);
+    }
+
+    function bar(a, b) {
+      return function() { /* uses a and b */ }
+    }
+    ```
+
+<a name="style">
 # JavaScript Style Rules
 
-<a name="naming"/>
+<a name="naming">
 ## Naming
 * In general, use:
   * functionNamesLikeThis,
